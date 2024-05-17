@@ -1,7 +1,6 @@
 package board.boardTest.controller;
 
 import board.boardTest.domain.memberdtos.LoginMemberDto;
-import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.domain.memberdtos.SavedMember;
 import board.boardTest.service.MemberService;
 import jakarta.validation.Valid;
