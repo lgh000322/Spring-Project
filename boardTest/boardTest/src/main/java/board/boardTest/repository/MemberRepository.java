@@ -9,7 +9,6 @@ import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Repository
@@ -19,26 +18,24 @@ public class MemberRepository {
     private final EntityManager em;
 
     //저장
-    public Optional<MemberDto> save(SavedMember savedMember) {
+    public Member save(SavedMember savedMember) {
         Member member = Member.savedMemberToMember(savedMember);
         em.persist(member);
 
-        Optional<MemberDto> memberDto = Optional.of(Member.memberToMemberDto(member));
-        return memberDto;
+        return member;
     }
 
     //sequence로 회원찾기
-    public Optional<MemberDto> findBySequence(Long sequence) {
+    public Optional<Member> findBySequence(Long sequence) {
         Member member = em.find(Member.class, sequence);
         if (member == null) {
             return Optional.empty();
         }
-        return Optional.of(Member.memberToMemberDto(member));
-
+        return Optional.of(member);
     }
 
     //회원 id로 회원찾기(MemberDto 반환)
-    public Optional<MemberDto> findById(String id) {
+    public Optional<Member> findById(String id) {
         try {
             Member findMember = em.createQuery(
                             "select m from Member m" +
@@ -47,7 +44,7 @@ public class MemberRepository {
                     .setParameter("id", id)
                     .getSingleResult();
 
-            return Optional.of(Member.memberToMemberDto(findMember));
+            return Optional.of(findMember);
 
         } catch (NoResultException e) {
             return Optional.empty();
@@ -56,7 +53,7 @@ public class MemberRepository {
     }
 
     //회원 id로 회원찾기 (LoginMemberDto 반환)
-    public Optional<LoginMemberDto> findByIdLoginDto(String id) {
+    public Optional<Member> findByIdLoginDto(String id) {
         try {
             Member findMember = em.createQuery(
                             "select m from Member m" +
@@ -64,7 +61,7 @@ public class MemberRepository {
                     .setParameter("id", id)
                     .getSingleResult();
 
-            return Optional.of(Member.memberToLoginMemberDto(findMember));
+            return Optional.of(findMember);
 
         } catch (NoResultException e) {
             return Optional.empty();
@@ -72,7 +69,7 @@ public class MemberRepository {
     }
 
     //회원의 이름으로 회원찾기
-    public Optional<MemberDto> findByName(String name) {
+    public Optional<Member> findByName(String name) {
         try {
             Member findMember = em.createQuery(
                             "select m from Member m" +
@@ -81,7 +78,7 @@ public class MemberRepository {
                     .setParameter("name", name)
                     .getSingleResult();
 
-            return Optional.of(Member.memberToMemberDto(findMember));
+            return Optional.of(findMember);
         } catch (NoResultException e) {
             return Optional.empty();
         }

@@ -50,7 +50,7 @@ public class SecurityConfig {
                         login
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/board",false)
+                                .defaultSuccessUrl("/board",true)
                                 .failureHandler(loginFailureHandler)
                                 .usernameParameter("id")
                                 .passwordParameter("pw")

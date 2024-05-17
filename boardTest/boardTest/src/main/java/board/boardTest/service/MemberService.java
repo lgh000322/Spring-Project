@@ -1,11 +1,15 @@
 package board.boardTest.service;
 
+import board.boardTest.domain.Member;
 import board.boardTest.domain.memberdtos.LoginMemberDto;
 import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.domain.memberdtos.SavedMember;
 import board.boardTest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +34,10 @@ public class MemberService {
             throw new RuntimeException("중복된 이름 또는 아이디를 입력하셨습니다.");
         }
         savedMember.setPw(passwordEncoder.encode(savedMember.getPw()));
-        Optional<MemberDto> savedMemberDto = memberRepository.save(savedMember);
-        MemberDto memberDto = savedMemberDto.get();
-        return memberDto;
+
+        Member save = memberRepository.save(savedMember);
+
+        return Member.memberToMemberDto(save);
     }
 
 
@@ -66,14 +71,13 @@ public class MemberService {
      */
 
     public MemberDto findMemberBySequence(Long sequence) {
-        Optional<MemberDto> result = memberRepository.findBySequence(sequence);
+        Optional<Member> result = memberRepository.findBySequence(sequence);
 
-        if (result.isPresent()) {
-            return result.get();
+        if (result.isEmpty()) {
+            return null;
         }
 
-        return null;
-
+        return Member.memberToMemberDto(result.get());
     }
 
     /**
@@ -83,7 +87,13 @@ public class MemberService {
      */
 
     public MemberDto findMemberById(String id) {
-        return memberRepository.findById(id).get();
+        Optional<Member> findMember = memberRepository.findById(id);
+
+        if (findMember.isEmpty()) {
+            return null;
+        }
+
+        return Member.memberToMemberDto(findMember.get());
     }
 
     /**
@@ -92,7 +102,23 @@ public class MemberService {
      * @return 로그인 dto
      */
     public LoginMemberDto findMemberByIdLoginMemberDto(String id) {
-        return memberRepository.findByIdLoginDto(id).get();
+        Optional<Member> findMember = memberRepository.findByIdLoginDto(id);
+
+        if (findMember.isEmpty()) {
+            return null;
+        }
+
+        return Member.memberToLoginMemberDto(findMember.get());
+    }
+
+    public MemberDto findMemberByName(String name) {
+        Optional<Member> findMember = memberRepository.findByName(name);
+
+        if (findMember.isEmpty()) {
+            return null;
+        }
+
+        return Member.memberToMemberDto(findMember.get());
     }
 
 
@@ -103,9 +129,16 @@ public class MemberService {
      * @return 회원의 아이디와 이름이 테이블에 저장되어 있지 않으면 true 반환
      */
     public boolean duplicateIdAndName(String id, String name) {
-        Optional<MemberDto> findMemberById = memberRepository.findById(id);
-        Optional<MemberDto> findMemberByName = memberRepository.findByName(name);
+        Optional<Member> findMemberById = memberRepository.findById(id);
+        Optional<Member> findMemberByName = memberRepository.findByName(name);
 
         return findMemberById.isEmpty() && findMemberByName.isEmpty();
+    }
+
+    public String getSecurityId() {
+        SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
+        Authentication authentication = context.getAuthentication();
+        String id = authentication.getName();
+        return id;
     }
 }

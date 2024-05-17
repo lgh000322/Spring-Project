@@ -1,6 +1,7 @@
 package board.boardTest.controller;
 
 import board.boardTest.domain.memberdtos.LoginMemberDto;
+import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.domain.memberdtos.SavedMember;
 import board.boardTest.service.MemberService;
 import jakarta.validation.Valid;
@@ -22,10 +23,9 @@ public class MemberController {
     /**
      * todo
      * 1. 로그인 실패 핸들러를 통해 login으로 다시 돌아오면 bindingResult를 사용해서 "아이디 또는 비밀번호를 잘못 입력하셨습니다" 를 출력하게 해야함
-     * 2. 로그인 성공시 게시판 페이지로 가게끔 구현
-     * 3. 각 게시판 기능 구현
-     * 4. 각 게시판 마다 댓글 기능 구현
-     * 5. 각 댓글마다 대댓글 기능 구현
+     * 2. 각 게시판 기능 구현
+     * 3. 각 게시판 마다 댓글 기능 구현
+     * 4. 각 댓글마다 대댓글 기능 구현
      */
     @GetMapping("/login")
     public String login(@ModelAttribute(name = "LoginMemberDto") LoginMemberDto loginMemberDto) {
@@ -47,6 +47,7 @@ public class MemberController {
         }
 
         memberService.save(savedMember);
+
         log.info("회원가입 완료");
 
         return "redirect:/login";

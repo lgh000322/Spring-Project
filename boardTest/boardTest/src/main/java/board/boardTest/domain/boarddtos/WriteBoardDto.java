@@ -6,12 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoardDto {
-    private Long id;
-
+public class WriteBoardDto {
     private String title;
 
-    private Integer view;
+    private String content;
 
     private Member member;
 }

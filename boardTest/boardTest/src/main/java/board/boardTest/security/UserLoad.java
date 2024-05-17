@@ -23,6 +23,10 @@ public class UserLoad implements UserDetailsService {
          */
         LoginMemberDto findLoginMemberDto = memberService.findMemberByIdLoginMemberDto(id);
 
+        if (findLoginMemberDto == null) {
+            throw new UsernameNotFoundException("존재하지 않는 회원입니다.");
+        }
+
         return User.builder()
                 .username(findLoginMemberDto.getId())
                 .password(findLoginMemberDto.getPw())

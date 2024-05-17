@@ -2,7 +2,9 @@ package board.boardTest.repository;
 
 import board.boardTest.domain.Board;
 import board.boardTest.domain.boarddtos.BoardDto;
+import board.boardTest.domain.boarddtos.WriteBoardDto;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +19,7 @@ public class BoardRepository {
     private final EntityManager em;
 
     //모든 튜플을 찾는 메소드
-    public Optional<List<BoardDto>> findAll() {
+    public Optional<List<Board>> findAll() {
         List<Board> findAll = em.createQuery("select b from Board b", Board.class)
                 .getResultList();
 
@@ -25,13 +27,28 @@ public class BoardRepository {
             return Optional.empty();
         }
 
-        List<BoardDto> returnValues = new ArrayList<>();
+        return Optional.of(findAll);
+    }
 
-        for (Board board : findAll) {
-            returnValues.add(Board.dtoToBoard(board));
+    public Board save(WriteBoardDto writeBoardDto) {
+        Board board = Board.writeBoardDtoToBoard(writeBoardDto);
+        em.persist(board);
+        return board;
+    }
+
+    public Optional<Board> findById(Long id) {
+        try {
+            Board findBoard = em.createQuery("select b from Board b" +
+                            " where b.id = :id", Board.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+
+            return Optional.of(findBoard);
+
+        } catch (NoResultException e) {
+            return Optional.empty();
         }
 
-        return Optional.of(returnValues);
     }
 
 

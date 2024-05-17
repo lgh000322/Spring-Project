@@ -48,6 +48,11 @@ public class Member {
         this.pw = pw;
     }
 
+    public Member(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
     public static Member savedMemberToMember(SavedMember savedMember) {
         return new Member(savedMember.getName(), savedMember.getId(), savedMember.getPw());
     }
@@ -66,5 +71,10 @@ public class Member {
         loginMemberDto.setId(member.getId());
         loginMemberDto.setPw(member.getPw());
         return loginMemberDto;
+    }
+
+    public static Member memberDtoToMember(MemberDto memberDto) {
+        Member member = new Member(memberDto.getName(), memberDto.getId());
+        return member;
     }
 }
