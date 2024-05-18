@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WriteBoardDto {
+    private Long boardId;
+
     private String title;
 
     private String content;

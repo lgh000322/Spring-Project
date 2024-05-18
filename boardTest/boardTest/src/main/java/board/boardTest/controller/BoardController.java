@@ -3,8 +3,10 @@ package board.boardTest.controller;
 import board.boardTest.domain.Member;
 import board.boardTest.domain.boarddtos.BoardDto;
 import board.boardTest.domain.boarddtos.WriteBoardDto;
+import board.boardTest.domain.commentdtos.CommentDto;
 import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.service.BoardService;
+import board.boardTest.service.CommentService;
 import board.boardTest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final MemberService memberService;
+    private final CommentService commentService;
 
     @GetMapping
     public String boardView(Model model) {
@@ -36,7 +39,11 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String getBoard(@PathVariable(name = "boardId") Long boardId, Model model) {
+
         WriteBoardDto writeBoardDto = boardService.findById(boardId);
+        List<CommentDto> findCommentDtos = commentService.getComments(writeBoardDto);
+        writeBoardDto.setBoardId(boardId);
+        model.addAttribute("CommentDto", findCommentDtos);
         model.addAttribute("WriteBoardDto", writeBoardDto);
         return "boardView";
     }

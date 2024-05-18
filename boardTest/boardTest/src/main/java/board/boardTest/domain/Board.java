@@ -64,6 +64,7 @@ public class Board {
 
     public static WriteBoardDto boardToWriteBoardDto(Board board) {
         WriteBoardDto writeBoardDto = new WriteBoardDto();
+        writeBoardDto.setBoardId(board.getId());
         writeBoardDto.setMember(board.getMember());
         writeBoardDto.setContent(board.getContent());
         writeBoardDto.setTitle(board.getTitle());

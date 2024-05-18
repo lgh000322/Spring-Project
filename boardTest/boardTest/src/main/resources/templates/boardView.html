@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 내용</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 내용</title>
+    <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
@@ -91,16 +91,87 @@
     p {
         white-space: pre-line;
     }
-  </style>
+
+
+
+
+
+    </style>
 </head>
 <body>
-<a href="/board" class = "button">홈으로 가기</a>
+<a href="/board" class="button">홈으로 가기</a>
 <h1>게시글 내용</h1>
 <div class="content" th:object="${WriteBoardDto}">
-  <h2 th:field="*{title}"></h2>
-  <p>작성자: <span th:field="*{member.name}"></span></p>
-  <hr>
-  <p th:utext="${#strings.replace(WriteBoardDto.content, '\n', '<br/>')}"></p>
+    <h2 th:field="*{title}"></h2>
+    <p>작성자: <span th:field="*{member.name}" th:text="${WriteBoardDto.member.name}"></span></p>
+    <hr>
+    <p th:utext="${#strings.replace(WriteBoardDto.content, '\n', '<br/>')}"></p>
 </div>
+<hr>
+
+<div class="content">
+    <p style="display:none;" th:text="${WriteBoardDto.boardId}" id="boardId"></p>
+    작성자
+    <p th:text="${WriteBoardDto.member.name}" id="memberName"></p>
+    댓글 작성란 <br>
+    <label for="commentContent"></label>
+    <textarea name="commentContent" id="commentContent"></textarea><br>
+
+    <button type="button" onclick="writeComment()">댓글 작성</button>
+</div>
+<hr>
+
+<div class="content" th:if="${CommentDto!=null}">
+    <ul id="commentList">
+        <li th:each="CommentDto:${CommentDto}">
+            <p>작성자: <span th:text="${CommentDto.member.name}"></span></p>
+            <p th:utext="${#strings.replace(CommentDto.commentContent, '\n', '<br/>')}"></p>
+        </li>
+    </ul>
+</div>
+
+
+<script>
+    function writeComment(){
+        let memberName=document.getElementById("memberName").textContent;
+        let content=document.getElementById("commentContent").value;
+        let boardId=document.getElementById("boardId").textContent;
+
+        fetch("/comment/write",{
+            method: "POST",
+            body: JSON.stringify({memberName: memberName, commentContent: content,boardId:boardId}),
+            headers:{
+                'Content-Type':'application/json',
+                'Accept':'application/json'
+            },
+        })
+        .then(response=>response.json())
+        .then(data =>{
+            if(data.success){
+                // 댓글 동적으로 생성
+                addCommentToList(data.comment);
+            }
+        })
+        .catch(error =>{
+            console.error("Error: ",error);
+            alert("댓글 작성중 에러가 발생했습니다.");
+        })
+
+    }
+    function addCommentToList(comment){
+        const commentList=document.getElementById("commentList");
+        const newComment=document.createElement("li");
+        newComment.innerHTML = `
+        <p>작성자: <span>${comment.memberName}</span></p>
+        <p>${comment.commentContent}</p>
+        `;
+
+       commentList.insertBefore(newComment, commentList.firstChild);
+    }
+
+
+
+
+</script>
 </body>
 </html>
