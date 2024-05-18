@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,12 +55,4 @@ public class BoardService {
         return Board.boardToWriteBoardDto(findBoard.get());
     }
 
-   /* @Transactional
-    public Long writeProcess(WriteBoardDto writeBoardDto) {
-        String id = memberService.getSecurityId();
-        Optional<Member> findMemberOptional = memberRepository.findById(id);
-        writeBoardDto.setMember(findMemberOptional.get());
-        BoardDto boardDto = writeBoard(writeBoardDto);
-        return boardDto.getId();
-    }*/
 }

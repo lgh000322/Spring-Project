@@ -121,9 +121,9 @@
 </div>
 <hr>
 
-<div class="content" th:if="${CommentDto!=null}">
+<div class="content">
     <ul id="commentList">
-        <li th:each="CommentDto:${CommentDto}">
+        <li th:each="CommentDto:${CommentDto}" th:if="${CommentDto!=null}">
             <p>작성자: <span th:text="${CommentDto.member.name}"></span></p>
             <p th:utext="${#strings.replace(CommentDto.commentContent, '\n', '<br/>')}"></p>
         </li>
@@ -166,7 +166,14 @@
         <p>${comment.commentContent}</p>
         `;
 
-       commentList.insertBefore(newComment, commentList.firstChild);
+        // commentList의 자식이 있는지 확인
+        if (commentList.childNodes === null || commentList.childNodes.length === 0) {
+            // 자식이 없는 경우, 그냥 추가
+            commentList.appendChild(newComment);
+        } else {
+            // 자식이 있는 경우, 첫 번째 자식 앞에 삽입
+            commentList.insertBefore(newComment, commentList.firstChild);
+        }
     }
 
 
