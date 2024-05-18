@@ -1,5 +1,6 @@
 package board.boardTest.controller;
 
+import board.boardTest.domain.Board;
 import board.boardTest.domain.Member;
 import board.boardTest.domain.boarddtos.BoardDto;
 import board.boardTest.domain.boarddtos.WriteBoardDto;
@@ -39,10 +40,12 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String getBoard(@PathVariable(name = "boardId") Long boardId, Model model) {
-
         WriteBoardDto writeBoardDto = boardService.findById(boardId);
         List<CommentDto> findCommentDtos = commentService.getComments(writeBoardDto);
         writeBoardDto.setBoardId(boardId);
+
+        boardService.updateView(writeBoardDto.getBoardId());
+
         model.addAttribute("CommentDto", findCommentDtos);
         model.addAttribute("WriteBoardDto", writeBoardDto);
         return "boardView";

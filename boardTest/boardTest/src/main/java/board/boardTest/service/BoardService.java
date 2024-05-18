@@ -55,4 +55,16 @@ public class BoardService {
         return Board.boardToWriteBoardDto(findBoard.get());
     }
 
+    @Transactional
+    public void updateView(Long boardId) {
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+
+        if (findBoard.isPresent()) {
+            Board board = findBoard.get();
+            board.addViews();
+        } else {
+            throw new RuntimeException("게시글을 찾을 수 없습니다.");
+        }
+    }
+
 }

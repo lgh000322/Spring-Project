@@ -5,6 +5,8 @@ import board.boardTest.domain.boarddtos.WriteBoardDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.Optional;
+
 @Entity
 @Getter
 public class Board {
@@ -49,7 +51,7 @@ public class Board {
     }
 
     public static Board writeBoardDtoToBoard(WriteBoardDto writeBoardDto) {
-        Board board = new Board(writeBoardDto.getContent(), writeBoardDto.getTitle(), writeBoardDto.getMember(), 0);
+        Board board = new Board(writeBoardDto.getContent(), writeBoardDto.getTitle(), writeBoardDto.getMember(), writeBoardDto.getView());
         return board;
     }
 
@@ -68,7 +70,13 @@ public class Board {
         writeBoardDto.setMember(board.getMember());
         writeBoardDto.setContent(board.getContent());
         writeBoardDto.setTitle(board.getTitle());
+        writeBoardDto.setView(board.getView());
 
         return writeBoardDto;
+    }
+
+    //============================== 비즈니스 로직 ===========================
+    public void addViews() {
+        this.view +=1;
     }
 }

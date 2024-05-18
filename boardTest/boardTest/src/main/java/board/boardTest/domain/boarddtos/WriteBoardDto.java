@@ -14,4 +14,6 @@ public class WriteBoardDto {
     private String content;
 
     private Member member;
+
+    private Integer view=0;
 }

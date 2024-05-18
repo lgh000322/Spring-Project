@@ -24,7 +24,6 @@ import java.util.Objects;
 public class CommentController {
 
     private final CommentService commentService;
-    private final BoardService boardService;
     @ResponseBody
     @PostMapping("/write")
     public Map<String,Object> writeProcess(@RequestBody CommentDto commentDto) {
