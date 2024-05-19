@@ -51,6 +51,14 @@ public class BoardRepository {
 
     }
 
+    public void deleteById(Long id) {
+        Board board = em.find(Board.class, id);
+
+        if (board != null) {
+            em.remove(board);
+        }
+    }
+
 
 
 }

@@ -7,6 +7,7 @@ import board.boardTest.domain.boarddtos.WriteBoardDto;
 import board.boardTest.repository.BoardRepository;
 import board.boardTest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -65,6 +67,11 @@ public class BoardService {
         } else {
             throw new RuntimeException("게시글을 찾을 수 없습니다.");
         }
+    }
+
+    @Transactional
+    public void deleteById(Long boardId) {
+        boardRepository.deleteById(boardId);
     }
 
 }

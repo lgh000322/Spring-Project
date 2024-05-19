@@ -5,6 +5,8 @@ import board.boardTest.domain.boarddtos.WriteBoardDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -29,9 +31,13 @@ public class Board {
     @JoinColumn(name = "member_sequence")
     private Member member;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
     //=============================== 연관관계 편의 메소드 ===========================/
 
     protected Board() {
+
     }
 
     private Board(String content, String title, Member member,Integer view) {

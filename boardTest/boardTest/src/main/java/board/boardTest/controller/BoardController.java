@@ -44,10 +44,14 @@ public class BoardController {
         List<CommentDto> findCommentDtos = commentService.getComments(writeBoardDto);
         writeBoardDto.setBoardId(boardId);
 
+        String memberId = memberService.getSecurityId();
+        MemberDto findMemberDto = memberService.findMemberById(memberId);
+
         boardService.updateView(writeBoardDto.getBoardId());
 
         model.addAttribute("CommentDto", findCommentDtos);
         model.addAttribute("WriteBoardDto", writeBoardDto);
+        model.addAttribute("LoginMemberName", findMemberDto.getName());
         return "boardView";
     }
 
@@ -67,5 +71,11 @@ public class BoardController {
         BoardDto boardDto = boardService.writeBoard(writeBoardDto);
         redirectAttributes.addAttribute("id", boardDto.getId());
         return "redirect:/board/{id}";
+    }
+
+    @PostMapping("/delete/{boardId}")
+    public String deleteBoardById(@PathVariable(name = "boardId") Long boardId) {
+        boardService.deleteById(boardId);
+        return "redirect:/board";
     }
 }
