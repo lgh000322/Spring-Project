@@ -4,10 +4,13 @@ import board.boardTest.domain.memberdtos.LoginMemberDto;
 import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.domain.memberdtos.SavedMember;
 import board.boardTest.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,11 +23,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    /**
-     * todo
-     * 1. 로그인 실패 핸들러를 통해 login으로 다시 돌아오면 bindingResult를 사용해서 "아이디 또는 비밀번호를 잘못 입력하셨습니다" 를 출력하게 해야함
-     * 2. 각 댓글마다 대댓글 기능 구현
-     */
+
     @GetMapping("/login")
     public String login(@ModelAttribute(name = "LoginMemberDto") LoginMemberDto loginMemberDto) {
         return "login";
