@@ -1,6 +1,7 @@
 package board.boardTest.controller;
 
 import board.boardTest.domain.memberdtos.LoginMemberDto;
+import board.boardTest.domain.memberdtos.MemberDto;
 import board.boardTest.domain.memberdtos.SavedMember;
 import board.boardTest.service.MemberService;
 import jakarta.validation.Valid;
@@ -43,7 +44,11 @@ public class MemberController {
             return "join";
         }
 
-        memberService.save(savedMember);
+        MemberDto save = memberService.save(savedMember);
+
+        if (save == null) {
+            return "join";
+        }
 
         log.info("회원가입 완료");
 

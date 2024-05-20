@@ -11,9 +11,6 @@ import board.boardTest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,6 +32,8 @@ public class CommentService {
         String memberName = commentDto.getMemberName();
         Optional<Member> findMember = memberRepository.findByName(memberName);
 
+        Integer lastIndex = commentRepository.getLastIndex(id);
+
         if (findMember.isEmpty()) {
             throw new RuntimeException("회원을 찾을 수 없습니다.");
         }
@@ -45,6 +44,8 @@ public class CommentService {
 
         commentDto.setMember(findMember.get());
         commentDto.setBoard(findBoard.get());
+        commentDto.setIndex(lastIndex);
+        commentDto.setDepth(1);
 
         Comment savedComment = commentRepository.save(commentDto);
 

@@ -31,7 +31,7 @@ public class MemberService {
     @Transactional
     public MemberDto save(SavedMember savedMember) {
         if (!duplicateIdAndName(savedMember.getId(), savedMember.getName())) {
-            throw new RuntimeException("중복된 이름 또는 아이디를 입력하셨습니다.");
+            return null;
         }
         savedMember.setPw(passwordEncoder.encode(savedMember.getPw()));
 

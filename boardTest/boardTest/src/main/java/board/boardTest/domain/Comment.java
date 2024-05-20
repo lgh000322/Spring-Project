@@ -16,6 +16,12 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
 
+    @Column(name = "comment_index")
+    private Integer index;
+
+    @Column(name = "comment_depth")
+    private Integer depth;
+
     @Column(name = "comment_content")
     private String content;
 
@@ -27,8 +33,7 @@ public class Comment {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentToComment> commentToCommentList = new ArrayList<>();
+
 
     //========================== 연관관계 편의 메소드 ======================================
 
@@ -36,22 +41,27 @@ public class Comment {
     protected Comment() {
     }
 
-    private Comment(String content, Member member, Board board) {
+    private Comment(Long id, Integer index, String content, Member member, Board board, Integer depth) {
+        this.depth = depth;
+        this.index = index;
+        this.id = id;
         this.content = content;
         this.member = member;
         this.board = board;
     }
 
     public static Comment commentDtoToComment(CommentDto commentDto) {
-        Comment comment = new Comment(commentDto.getCommentContent(), commentDto.getMember(), commentDto.getBoard());
-
+        Comment comment = new Comment(commentDto.getCommentId(), commentDto.getIndex(), commentDto.getCommentContent(), commentDto.getMember(), commentDto.getBoard(), commentDto.getDepth());
         return comment;
     }
 
     public static CommentDto commentToCommentDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
+        commentDto.setCommentId(comment.getId());
+        commentDto.setIndex(comment.getIndex());
         commentDto.setMember(comment.getMember());
         commentDto.setBoard(comment.getBoard());
+        commentDto.setDepth(comment.getDepth());
         commentDto.setCommentContent(comment.getContent());
         return commentDto;
     }

@@ -8,6 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CommentDto {
+    private Long commentId;
+
+    private Integer index;
+
     private Long boardId;
 
     private Board board;
@@ -17,4 +21,6 @@ public class CommentDto {
     private Member member;
 
     private String commentContent;
+
+    private Integer depth;
 }

@@ -32,11 +32,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Comment> commentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<CommentToComment> commentToCommentList = new ArrayList<>();
-
-
     //========================== 연관관계 편의 메소드 ========================================//
 
     protected Member() {

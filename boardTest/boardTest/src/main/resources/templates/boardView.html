@@ -98,6 +98,7 @@ p {
   white-space: pre-line;
 }
 
+
     </style>
 </head>
 <body>
@@ -106,7 +107,8 @@ p {
     <tr>
         <td><a class="button" href="/board">홈으로 가기</a></td>
         <td>
-            <form th:action="@{/board/delete/{boardId}(boardId=${WriteBoardDto.boardId})}" method="post" th:if="${WriteBoardDto.member.name eq LoginMemberName}">
+            <form method="post" th:action="@{/board/delete/{boardId}(boardId=${WriteBoardDto.boardId})}"
+                  th:if="${WriteBoardDto.member.name eq LoginMemberName}">
                 <button class="button" type="submit">게시글 삭제</button>
             </form>
         </td>
@@ -126,7 +128,7 @@ p {
 <div class="content">
     <p id="boardId" style="display:none;" th:text="${WriteBoardDto.boardId}"></p>
     작성자
-    <p id="memberName" th:text="${WriteBoardDto.member.name}"></p>
+    <p id="memberName" th:text="${LoginMemberName}"></p>
     댓글 작성란 <br>
     <label for="commentContent"></label>
     <textarea id="commentContent" name="commentContent"></textarea><br>
@@ -137,15 +139,88 @@ p {
 
 <div class="content">
     <ul id="commentList">
-        <li th:each="CommentDto:${CommentDto}" th:if="${CommentDto!=null}">
+        <li th:each="CommentDto:${CommentDto}" th:if="${CommentDto!=null}" th:id="'comment'+${CommentDto.index}">
             <p>작성자: <span th:text="${CommentDto.member.name}"></span></p>
             <p th:utext="${#strings.replace(CommentDto.commentContent, '\n', '<br/>')}"></p>
+            <button type="button" th:onclick="'writeCtoC(' + ${CommentDto.index} + ')'">대댓글 작성버튼</button>
+
         </li>
     </ul>
 </div>
 
 
 <script>
+     function writeCtoC(index){
+        console.log(index);
+        const li = document.getElementById("comment" + index);
+
+        if (li.querySelector(".reply-form")) {
+            return;
+        }
+
+        // 폼 요소 생성
+        const form = document.createElement("div");
+        form.className = "reply-form";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "답글 내용을 입력하세요";
+        input.className = "reply-input";
+
+        const submitButton = document.createElement("button");
+        submitButton.type = "button";
+        submitButton.textContent = "답글 작성";
+        submitButton.onclick = function() { submitReply(commentId, input.value); };
+
+        form.appendChild(input);
+        form.appendChild(submitButton);
+
+        // 폼을 li 요소에 추가
+        li.appendChild(form);
+    }
+
+       function submitReply(commentId, replyContent) {
+        let memberName = document.getElementById("memberName").textContent;
+        let boardId = document.getElementById("boardId").textContent;
+
+        fetch("/reply/write", {
+            method: "POST",
+            body: JSON.stringify({ memberName: memberName, commentContent: replyContent, commentId: commentId, boardId: boardId }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 댓글에 답글 추가
+                addReplyToComment(commentId, data.reply);
+            }
+        })
+        .catch(error => {
+            console.error("Error: ", error);
+            alert("답글 작성 중 에러가 발생했습니다.");
+        });
+    }
+
+    function addReplyToComment(commentId, reply) {
+        const li = document.getElementById("comment" + commentId);
+        const replyList = li.querySelector(".reply-list") || document.createElement("ul");
+        replyList.className = "reply-list";
+
+        const newReply = document.createElement("li");
+        newReply.innerHTML = `
+            <p>작성자: <span>${reply.memberName}</span></p>
+            <p>${reply.commentContent}</p>
+        `;
+
+        replyList.appendChild(newReply);
+        li.appendChild(replyList);
+    }
+
+
+
     function writeComment(){
         let memberName=document.getElementById("memberName").textContent;
         let content=document.getElementById("commentContent").value;
@@ -172,6 +247,7 @@ p {
         })
 
     }
+
     function addCommentToList(comment){
         const commentList=document.getElementById("commentList");
         const newComment=document.createElement("li");
@@ -189,10 +265,6 @@ p {
             commentList.insertBefore(newComment, commentList.firstChild);
         }
     }
-
-
-
-
 
 </script>
 </body>
