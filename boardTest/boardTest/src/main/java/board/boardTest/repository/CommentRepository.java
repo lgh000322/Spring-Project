@@ -31,7 +31,7 @@ public class CommentRepository {
                         "select c from Comment c" +
                                 " where board.id =: id and" +
                                 " c.depth = :depth" +
-                                " order by c.id asc"
+                                " order by c.index asc, c.depth asc"
                         , Comment.class)
                 .setParameter("id", writeBoardDto.getBoardId())
                 .setParameter("depth", 1)
@@ -42,6 +42,13 @@ public class CommentRepository {
         }
 
         return Optional.of(findComments);
+    }
+
+    public Comment saveCommentTo(CommentDto commentDto) {
+        Comment comment = Comment.commentDtoToComment(commentDto);
+        em.persist(comment);
+
+        return comment;
     }
 
     public Integer getLastIndex(Long boardId) {
@@ -57,6 +64,22 @@ public class CommentRepository {
 
         return maxIndex+1;
 
+    }
+
+    public Integer getDepth(Long boardId, Integer index) {
+        Integer maxDepth = em.createQuery(
+                        "select max(c.depth) from Comment c" +
+                                " where c.board.id = :boardId" +
+                                " and c.index = :index", Integer.class)
+                .setParameter("boardId", boardId)
+                .setParameter("index", index)
+                .getSingleResult();
+
+        if (maxDepth == null) {
+            return 1;
+        }
+
+        return maxDepth + 1;
     }
 
 

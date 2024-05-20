@@ -52,6 +52,31 @@ public class CommentService {
         return Comment.commentToCommentDto(savedComment);
     }
 
+    @Transactional
+    public CommentDto saveCommentTo(CommentDto commentDto) {
+        String memberName = commentDto.getMemberName();
+        Optional<Member> findMember = memberRepository.findByName(memberName);
+
+        Long boardId = commentDto.getBoardId();
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+
+        Integer index = commentDto.getIndex();
+
+        if (findMember.isEmpty()) {
+            throw new RuntimeException("회원을 찾을 수 없습니다.");
+        }
+
+        if (findBoard.isEmpty()) {
+            throw new RuntimeException("게시글을 찾을 수 없습니다.");
+        }
+
+        commentDto.setBoard(findBoard.get());
+        commentDto.setMember(findMember.get());
+        commentDto.setDepth(commentRepository.getDepth(boardId,index));
+
+        return Comment.commentToCommentDto(commentRepository.saveCommentTo(commentDto));
+    }
+
     public List<CommentDto> getComments(WriteBoardDto writeBoardDto) {
         Optional<List<Comment>> findComments = commentRepository.findAll(writeBoardDto);
 
@@ -63,6 +88,8 @@ public class CommentService {
                 .map(Comment::commentToCommentDto)
                 .collect(Collectors.toList());
     }
+
+
 
 
 }

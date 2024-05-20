@@ -37,6 +37,16 @@ public class CommentController {
         return response;
     }
 
+    @ResponseBody
+    @PostMapping("/write-comment-to")
+    public Map<String, Object> writeCommentTo(@RequestBody CommentDto commentDto) {
+        commentService.saveCommentTo(commentDto);
+
+        Map<String, Object> response = new HashMap<>();
+
+        return response;
+    }
+
     private CommentViewDto getCommentViewDto(CommentDto commentDto, CommentDto savedCommentDto) {
         CommentViewDto commentViewDto = new CommentViewDto();
         commentViewDto.setCommentContent(savedCommentDto.getCommentContent());

@@ -170,7 +170,7 @@ p {
         const submitButton = document.createElement("button");
         submitButton.type = "button";
         submitButton.textContent = "답글 작성";
-        submitButton.onclick = function() { submitReply(commentId, input.value); };
+        submitButton.onclick = function() { submitReply(index, input.value); };
 
         form.appendChild(input);
         form.appendChild(submitButton);
@@ -179,13 +179,13 @@ p {
         li.appendChild(form);
     }
 
-       function submitReply(commentId, replyContent) {
+       function submitReply(index, replyContent) {
         let memberName = document.getElementById("memberName").textContent;
         let boardId = document.getElementById("boardId").textContent;
 
-        fetch("/reply/write", {
+        fetch("/comment/write-comment-to", {
             method: "POST",
-            body: JSON.stringify({ memberName: memberName, commentContent: replyContent, commentId: commentId, boardId: boardId }),
+            body: JSON.stringify({ memberName: memberName, commentContent: replyContent, index: index, boardId: boardId}),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -195,7 +195,7 @@ p {
         .then(data => {
             if (data.success) {
                 // 댓글에 답글 추가
-                addReplyToComment(commentId, data.reply);
+                addReplyToComment(index, data.reply);
             }
         })
         .catch(error => {
@@ -204,8 +204,8 @@ p {
         });
     }
 
-    function addReplyToComment(commentId, reply) {
-        const li = document.getElementById("comment" + commentId);
+    function addReplyToComment(index, reply) {
+        const li = document.getElementById("comment" + index);
         const replyList = li.querySelector(".reply-list") || document.createElement("ul");
         replyList.className = "reply-list";
 
