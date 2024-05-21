@@ -5,100 +5,98 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>게시글 내용</title>
     <style>
-    body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-  margin: 20px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
 
-h1 {
-  background-color: black;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-}
+        h1 {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
 
-.content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-}
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
 
-.answer-list {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 5px;
-  margin-top: 20px;
-}
+        .answer-list {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
 
-.answer {
-  background-color: #ECECEC;
-  padding: 10px;
-  border: 1px solid #CCC;
-  margin: 10px 0;
-}
+        .answer {
+            background-color: #ECECEC;
+            padding: 10px;
+            border: 1px solid #CCC;
+            margin: 10px 0;
+        }
 
-.answerSelected {
-  background-color: #87CEEB;
-  padding: 10px;
-  border: 1px solid #CCC;
-  margin: 10px 0;
-}
+        .answerSelected {
+            background-color: #87CEEB;
+            padding: 10px;
+            border: 1px solid #CCC;
+            margin: 10px 0;
+        }
 
-.add-answer {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 5px;
-  margin-top: 20px;
-}
+        .add-answer {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
 
-.add-answer form {
-  margin-top: 10px;
-}
+        .add-answer form {
+            margin-top: 10px;
+        }
 
-.add-answer label {
-  font-weight: bold;
-}
+        .add-answer label {
+            font-weight: bold;
+        }
 
-.add-answer input[type="text"],
-.add-answer textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
+        .add-answer input[type="text"],
+        .add-answer textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
 
-.add-answer button {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+        .add-answer button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-.button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: black;
-  color: #fff;
-  text-decoration: none;
-  border: 1px solid black;
-  border-radius: 5px;
-  text-align: center;
-  vertical-align: middle;
-}
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: black;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid black;
+            border-radius: 5px;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-.button:hover {
-  background-color: black;
-}
+        .button:hover {
+            background-color: black;
+        }
 
-p {
-  white-space: pre-line;
-}
-
-
+        p {
+            white-space: pre-line;
+        }
     </style>
 </head>
 <body>
@@ -142,15 +140,49 @@ p {
         <li th:each="CommentDto:${CommentDto}" th:if="${CommentDto!=null}" th:id="'comment'+${CommentDto.index}">
             <p>작성자: <span th:text="${CommentDto.member.name}"></span></p>
             <p th:utext="${#strings.replace(CommentDto.commentContent, '\n', '<br/>')}"></p>
+            <button type="button" th:if="${CommentDto.hasChild==true}" th:onclick="'showCommentToComment(' + ${CommentDto.index} + ')'">대댓글 보기버튼</button>
             <button type="button" th:onclick="'writeCtoC(' + ${CommentDto.index} + ')'">대댓글 작성버튼</button>
-
         </li>
     </ul>
 </div>
 
 
 <script>
-     function writeCtoC(index){
+    function showCommentToComment(index){
+        let boardId = document.getElementById("boardId").textContent;
+        fetch(`/comment/get-comment-to?index=${index}&boardId=${boardId}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            writeCommentToCommentList(data.returnList, index);
+        })
+        .catch(error => {
+            console.error("Error: ", error);
+            alert("답글 작성 중 에러가 발생했습니다.");
+        });
+    }
+
+    function writeCommentToCommentList(list, index){
+        let commentSection = document.getElementById('comment' + index);
+
+        list.forEach((comment) => {
+            const commentDiv = document.createElement('div');
+
+            commentDiv.innerHTML = `
+                <p>작성자: <strong>${comment.memberName}</strong></p>
+                <p>작성 내용: ${comment.commentContent}</p>
+            `;
+
+            commentSection.appendChild(commentDiv);
+        });
+    }
+
+    function writeCtoC(index){
         console.log(index);
         const li = document.getElementById("comment" + index);
 
@@ -179,7 +211,7 @@ p {
         li.appendChild(form);
     }
 
-       function submitReply(index, replyContent) {
+    function submitReply(index, replyContent) {
         let memberName = document.getElementById("memberName").textContent;
         let boardId = document.getElementById("boardId").textContent;
 
@@ -219,41 +251,38 @@ p {
         li.appendChild(replyList);
     }
 
-
-
     function writeComment(){
-        let memberName=document.getElementById("memberName").textContent;
-        let content=document.getElementById("commentContent").value;
-        let boardId=document.getElementById("boardId").textContent;
+        let memberName = document.getElementById("memberName").textContent;
+        let content = document.getElementById("commentContent").value;
+        let boardId = document.getElementById("boardId").textContent;
 
-        fetch("/comment/write",{
+        fetch("/comment/write", {
             method: "POST",
-            body: JSON.stringify({memberName: memberName, commentContent: content,boardId:boardId}),
-            headers:{
+            body: JSON.stringify({memberName: memberName, commentContent: content, boardId: boardId}),
+            headers: {
                 'Content-Type':'application/json',
                 'Accept':'application/json'
             },
         })
-        .then(response=>response.json())
-        .then(data =>{
+        .then(response => response.json())
+        .then(data => {
             if(data.success){
                 // 댓글 동적으로 생성
                 addCommentToList(data.comment);
             }
         })
-        .catch(error =>{
+        .catch(error => {
             console.error("Error: ",error);
-            alert("댓글 작성중 에러가 발생했습니다.");
-        })
-
+            alert("댓글 작성 중 에러가 발생했습니다.");
+        });
     }
 
     function addCommentToList(comment){
-        const commentList=document.getElementById("commentList");
-        const newComment=document.createElement("li");
+        const commentList = document.getElementById("commentList");
+        const newComment = document.createElement("li");
         newComment.innerHTML = `
-        <p>작성자: <span>${comment.memberName}</span></p>
-        <p>${comment.commentContent}</p>
+            <p>작성자: <span>${comment.memberName}</span></p>
+            <p>${comment.commentContent}</p>
         `;
 
         // commentList의 자식이 있는지 확인
@@ -265,7 +294,6 @@ p {
             commentList.insertBefore(newComment, commentList.firstChild);
         }
     }
-
 </script>
 </body>
 </html>

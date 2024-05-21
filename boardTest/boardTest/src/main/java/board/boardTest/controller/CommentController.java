@@ -1,21 +1,20 @@
 package board.boardTest.controller;
 
+import board.boardTest.domain.Comment;
 import board.boardTest.domain.commentdtos.CommentDto;
+import board.boardTest.domain.commentdtos.CommentToCommentDto;
 import board.boardTest.domain.commentdtos.CommentViewDto;
 import board.boardTest.service.BoardService;
 import board.boardTest.service.CommentService;
 import board.boardTest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,6 +44,16 @@ public class CommentController {
         Map<String, Object> response = new HashMap<>();
 
         return response;
+    }
+
+    @GetMapping("/get-comment-to")
+    public ResponseEntity<List<CommentDto>> getCommentToComment(@RequestParam(name = "boardId") Long boardId,
+                                                                @RequestParam(name = "index") Integer index) {
+        CommentToCommentDto commentToCommentDto = new CommentToCommentDto();
+        commentToCommentDto.setIndex(index);
+        commentToCommentDto.setBoardId(boardId);
+        List<CommentDto> returnList = commentService.getCommentToComments(commentToCommentDto);
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
     }
 
     private CommentViewDto getCommentViewDto(CommentDto commentDto, CommentDto savedCommentDto) {

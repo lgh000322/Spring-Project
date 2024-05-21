@@ -47,7 +47,10 @@ public class BoardController {
         String memberId = memberService.getSecurityId();
         MemberDto findMemberDto = memberService.findMemberById(memberId);
 
+        //조회수 증가
         boardService.updateView(writeBoardDto.getBoardId());
+
+        //대댓글을 가지고 있는지 확인
 
         model.addAttribute("CommentDto", findCommentDtos);
         model.addAttribute("WriteBoardDto", writeBoardDto);

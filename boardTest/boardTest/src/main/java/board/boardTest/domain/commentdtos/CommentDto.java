@@ -23,4 +23,6 @@ public class CommentDto {
     private String commentContent;
 
     private Integer depth;
+
+    private Boolean hasChild;
 }

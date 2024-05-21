@@ -25,6 +25,9 @@ public class Comment {
     @Column(name = "comment_content")
     private String content;
 
+    @Column(name = "comment_child")
+    private Boolean hasChild;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_sequence")
     private Member member;
@@ -41,7 +44,8 @@ public class Comment {
     protected Comment() {
     }
 
-    private Comment(Long id, Integer index, String content, Member member, Board board, Integer depth) {
+    private Comment(Boolean hasChild, Long id, Integer index, String content, Member member, Board board, Integer depth) {
+        this.hasChild = hasChild;
         this.depth = depth;
         this.index = index;
         this.id = id;
@@ -51,18 +55,24 @@ public class Comment {
     }
 
     public static Comment commentDtoToComment(CommentDto commentDto) {
-        Comment comment = new Comment(commentDto.getCommentId(), commentDto.getIndex(), commentDto.getCommentContent(), commentDto.getMember(), commentDto.getBoard(), commentDto.getDepth());
+        Comment comment = new Comment(commentDto.getHasChild(), commentDto.getCommentId(), commentDto.getIndex(), commentDto.getCommentContent(), commentDto.getMember(), commentDto.getBoard(), commentDto.getDepth());
         return comment;
     }
 
     public static CommentDto commentToCommentDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setCommentId(comment.getId());
+        commentDto.setHasChild(comment.getHasChild());
         commentDto.setIndex(comment.getIndex());
         commentDto.setMember(comment.getMember());
         commentDto.setBoard(comment.getBoard());
         commentDto.setDepth(comment.getDepth());
         commentDto.setCommentContent(comment.getContent());
         return commentDto;
+    }
+
+    //============================ 비즈니스 로직 ================================
+    public void addCommentToComment() {
+        this.hasChild=true;
     }
 }
