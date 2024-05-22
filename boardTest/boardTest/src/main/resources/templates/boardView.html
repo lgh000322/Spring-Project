@@ -148,6 +148,7 @@
 
 
 <script>
+
     function showCommentToComment(index){
         let boardId = document.getElementById("boardId").textContent;
         fetch(`/comment/get-comment-to?index=${index}&boardId=${boardId}`, {
@@ -159,7 +160,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            writeCommentToCommentList(data.returnList, index);
+            writeCommentToCommentList(data, index);
         })
         .catch(error => {
             console.error("Error: ", error);
@@ -176,6 +177,7 @@
             commentDiv.innerHTML = `
                 <p>작성자: <strong>${comment.memberName}</strong></p>
                 <p>작성 내용: ${comment.commentContent}</p>
+                <hr>
             `;
 
             commentSection.appendChild(commentDiv);
@@ -225,10 +227,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                // 댓글에 답글 추가
-                addReplyToComment(index, data.reply);
-            }
+            addReplyToComment(data,index);
         })
         .catch(error => {
             console.error("Error: ", error);
@@ -236,15 +235,15 @@
         });
     }
 
-    function addReplyToComment(index, reply) {
+    function addReplyToComment(data,index) {
         const li = document.getElementById("comment" + index);
         const replyList = li.querySelector(".reply-list") || document.createElement("ul");
         replyList.className = "reply-list";
 
         const newReply = document.createElement("li");
         newReply.innerHTML = `
-            <p>작성자: <span>${reply.memberName}</span></p>
-            <p>${reply.commentContent}</p>
+            <p>작성자: <span>${data.memberName}</span></p>
+            <p>${data.commentContent}</p>
         `;
 
         replyList.appendChild(newReply);

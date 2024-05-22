@@ -4,6 +4,7 @@ import board.boardTest.domain.Comment;
 import board.boardTest.domain.commentdtos.CommentDto;
 import board.boardTest.domain.commentdtos.CommentToCommentDto;
 import board.boardTest.domain.commentdtos.CommentViewDto;
+import board.boardTest.domain.commentdtos.ViewCommentToCommentDto;
 import board.boardTest.service.BoardService;
 import board.boardTest.service.CommentService;
 import board.boardTest.service.MemberService;
@@ -36,24 +37,33 @@ public class CommentController {
         return response;
     }
 
-    @ResponseBody
     @PostMapping("/write-comment-to")
-    public Map<String, Object> writeCommentTo(@RequestBody CommentDto commentDto) {
-        commentService.saveCommentTo(commentDto);
+    public ResponseEntity<ViewCommentToCommentDto> writeCommentTo(@RequestBody CommentDto commentDto) {
+        CommentDto savedCommentDto = commentService.saveCommentTo(commentDto);
+        ViewCommentToCommentDto viewCommentToCommentDto = new ViewCommentToCommentDto();
+        viewCommentToCommentDto.setMemberName(savedCommentDto.getMember().getName());
+        viewCommentToCommentDto.setCommentContent(savedCommentDto.getCommentContent());
 
-        Map<String, Object> response = new HashMap<>();
-
-        return response;
+        return new ResponseEntity<>(viewCommentToCommentDto, HttpStatus.OK);
     }
 
     @GetMapping("/get-comment-to")
-    public ResponseEntity<List<CommentDto>> getCommentToComment(@RequestParam(name = "boardId") Long boardId,
-                                                                @RequestParam(name = "index") Integer index) {
+    public ResponseEntity<List<ViewCommentToCommentDto>> getCommentToComment(@RequestParam(name = "boardId") Long boardId,
+                                                                             @RequestParam(name = "index") Integer index) {
         CommentToCommentDto commentToCommentDto = new CommentToCommentDto();
         commentToCommentDto.setIndex(index);
         commentToCommentDto.setBoardId(boardId);
-        List<CommentDto> returnList = commentService.getCommentToComments(commentToCommentDto);
-        return new ResponseEntity<>(returnList, HttpStatus.OK);
+        List<CommentDto> result = commentService.getCommentToComments(commentToCommentDto);
+        List<ViewCommentToCommentDto> list = new ArrayList<>();
+        result.forEach(commentDto -> {
+            ViewCommentToCommentDto viewCommentToCommentDto = new ViewCommentToCommentDto();
+            viewCommentToCommentDto.setCommentContent(commentDto.getCommentContent());
+            viewCommentToCommentDto.setMemberName(commentDto.getMemberName());
+            list.add(viewCommentToCommentDto);
+        });
+
+        return new ResponseEntity(list, HttpStatus.OK);
+
     }
 
     private CommentViewDto getCommentViewDto(CommentDto commentDto, CommentDto savedCommentDto) {
