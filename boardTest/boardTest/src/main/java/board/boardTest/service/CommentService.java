@@ -107,25 +107,14 @@ public class CommentService {
 
     public List<CommentDto> getCommentToComments(CommentToCommentDto commentToCommentDto) {
         Optional<List<Comment>> commentToComments = commentRepository.findCommentToComments(commentToCommentDto.getBoardId(), commentToCommentDto.getIndex());
-        List<CommentDto> resultList = new ArrayList<>();
 
-        if (commentToComments.isPresent()) {
-            List<Comment> comments = commentToComments.get();
-
-            for (Comment comment : comments) {
-                String memberName = comment.getMember().getName(); // 프록시 객체의 메서드 호출로 프록시 초기화
-                CommentDto commentDto = Comment.commentToCommentDto(comment);
-                commentDto.setMemberName(memberName);
-                resultList.add(commentDto);
-
-            }
-
-            return resultList;
+        if (commentToComments.isEmpty()) {
+            return null;
         }
 
-        return null;
-
-
+        return commentToComments.get().stream()
+                .map(Comment::commentToCommentDto)
+                .collect(Collectors.toList());
     }
 
 

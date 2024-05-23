@@ -58,7 +58,7 @@ public class CommentController {
         result.forEach(commentDto -> {
             ViewCommentToCommentDto viewCommentToCommentDto = new ViewCommentToCommentDto();
             viewCommentToCommentDto.setCommentContent(commentDto.getCommentContent());
-            viewCommentToCommentDto.setMemberName(commentDto.getMemberName());
+            viewCommentToCommentDto.setMemberName(commentDto.getMember().getName());
             list.add(viewCommentToCommentDto);
         });
 

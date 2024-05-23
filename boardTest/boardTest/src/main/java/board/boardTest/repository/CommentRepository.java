@@ -93,6 +93,7 @@ public class CommentRepository {
     public Optional<List<Comment>> findCommentToComments(Long boardId, Integer index) {
         List<Comment> resultList = em.createQuery("select c from Comment c" +
                         " join c.board b" +
+                        " join fetch c.member m" +
                         " where b.id = :boardId and c.index = :index and c.depth <> :depth", Comment.class)
                 .setParameter("boardId", boardId)
                 .setParameter("index", index)
