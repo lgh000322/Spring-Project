@@ -4,6 +4,27 @@
     <meta charset="utf-8">
     <link th:href="@{/css/bootstrap.min.css}"
           href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            justify-content: center;
+        }
+
+        .pagination a, .pagination strong {
+            text-decoration: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            color: black; /* 페이지네이션 링크 색상을 검은색으로 지정 */
+        }
+
+        .pagination strong {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 <div class="container" style="max-width: 600px">
@@ -14,7 +35,20 @@
     </div>
 
     <button type="button" class="w-100 btn btn-secondary btn-lg" th:onclick="|location.href='@{/board/write}'|">게시글 작성</button>
+    <button type="button" class="w-100 btn btn-secondary btn-lg" th:onclick="|location.href='@{/logout}'|">로그아웃</button>
     <hr class="my-4">
+
+    <!-- 검색 폼 -->
+    <form action="/board" method="get" id="searchForm" name="search-form">
+        <select name="type" class="type-box">
+            <option value="">검색 유형 선택</option>
+            <option value="title">제목</option>
+            <option value="writer">작성자</option>
+        </select>
+        <input class="inputId" type="text" name="keyword" placeholder="검색어 입력">
+        <input class="submitBtn" type="submit" value="검색하기">
+    </form>
+
     <div>
         <table class="table">
             <thead>
@@ -35,6 +69,27 @@
             </tbody>
         </table>
     </div>
+
+    <ul class="pagination">
+        <li><a th:href="@{/board(page=0)}">첫페이지</a></li>
+
+        <th:block th:if="${startPage >= endPage}">
+            <li style="color:red;">
+                <strong th:text="1"></strong>
+            </li>
+        </th:block>
+
+        <th:block  th:if="${startPage<endPage}" th:each="page:${#numbers.sequence(startPage, endPage)}">
+            <li th:if="${page != nowPage}">
+                <a th:href="@{/board(page=${page-1})}" th:text="${page}"></a>
+            </li>
+            <li th:if="${page == nowPage}" style="color:red;">
+                <strong th:text="${page}"></strong>
+            </li>
+        </th:block>
+
+        <li><a th:href="@{/board(page=${endPage-1})}">마지막페이지</a></li>
+    </ul>
 </div>
 </body>
 </html>

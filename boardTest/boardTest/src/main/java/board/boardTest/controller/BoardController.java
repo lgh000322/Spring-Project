@@ -1,6 +1,5 @@
 package board.boardTest.controller;
 
-import board.boardTest.domain.Board;
 import board.boardTest.domain.Member;
 import board.boardTest.domain.boarddtos.BoardDto;
 import board.boardTest.domain.boarddtos.WriteBoardDto;
@@ -11,9 +10,10 @@ import board.boardTest.service.CommentService;
 import board.boardTest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +32,24 @@ public class BoardController {
     private final CommentService commentService;
 
     @GetMapping
-    public String boardView(Model model) {
-        List<BoardDto> findBoards = boardService.findAll();
+    public String boardView(@PageableDefault(page = 0, size = 3) Pageable pageable,
+                            @RequestParam(name = "type", required = false) String type, //검색 타입
+                            @RequestParam(name = "keyword", required = false) String keyword, // 검색 키워드
+                            Model model) {
+        Page<BoardDto> findBoards = boardService.findAll(type,keyword,pageable);
+
+        int nowPage = 1; // 기본값 1로 설정
+        if (!findBoards.isEmpty()) {
+            nowPage = findBoards.getPageable().getPageNumber() + 1;
+        }
+        int startPage = Math.max(nowPage - 4, 1);
+        int endPage = Math.min(nowPage + 5, findBoards.getTotalPages());
+
+        model.addAttribute("nowPage", nowPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("BoardDto", findBoards);
+
         return "boards";
     }
 
