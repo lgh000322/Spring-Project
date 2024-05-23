@@ -30,7 +30,8 @@ public class CommentRepository {
         log.info("writeBoardDto의 boardId= {} ", writeBoardDto.getBoardId());
         List<Comment> findComments = em.createQuery(
                         "select c from Comment c" +
-                                " where board.id =: id and" +
+                                " join c.board b" +
+                                " where b.id =: id and" +
                                 " c.depth = :depth" +
                                 " order by c.index asc"
                         , Comment.class)
@@ -57,6 +58,7 @@ public class CommentRepository {
     public Integer getLastIndex(Long boardId) {
         Integer maxIndex = em.createQuery(
                         "select max(c.index) from Comment c" +
+                                " join c.board b" +
                                 " where c.board.id = :boardId", Integer.class)
                 .setParameter("boardId", boardId)
                 .getSingleResult();
@@ -74,7 +76,8 @@ public class CommentRepository {
     public Integer getDepth(Long boardId, Integer index) {
         Integer maxDepth = em.createQuery(
                         "select max(c.depth) from Comment c" +
-                                " where c.board.id = :boardId" +
+                                " join c.board b" +
+                                " where b.id = :boardId" +
                                 " and c.index = :index", Integer.class)
                 .setParameter("boardId", boardId)
                 .setParameter("index", index)
@@ -89,7 +92,7 @@ public class CommentRepository {
 
     public Optional<List<Comment>> findCommentToComments(Long boardId, Integer index) {
         List<Comment> resultList = em.createQuery("select c from Comment c" +
-                        " join fetch c.board b" +
+                        " join c.board b" +
                         " where b.id = :boardId and c.index = :index and c.depth <> :depth", Comment.class)
                 .setParameter("boardId", boardId)
                 .setParameter("index", index)
@@ -106,7 +109,8 @@ public class CommentRepository {
 
     public Optional<Comment> findParent(Long boardId, Integer index,Integer depth) {
         Comment parentComment = em.createQuery("select c from Comment c" +
-                        " where c.board.id = :boardId and c.index =: index and c.depth = :depth", Comment.class)
+                        " join c.board b" +
+                        " where b.id = :boardId and c.index =: index and c.depth = :depth", Comment.class)
                 .setParameter("boardId", boardId)
                 .setParameter("index", index)
                 .setParameter("depth", depth)

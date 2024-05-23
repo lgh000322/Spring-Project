@@ -91,7 +91,7 @@ public class BoardRepository {
 
     public Optional<Page<Board>> findByMember_Name(String keyword, Pageable pageable) {
         List<Board> findAll = em.createQuery("select b from Board b" +
-                        " join fetch b.member m" +
+                        " join b.member m" +
                         " where m.name like :keyword" +
                         " order by b.id desc", Board.class)
                 .setParameter("keyword", "%" + keyword + "%")
@@ -104,7 +104,8 @@ public class BoardRepository {
         }
 
         long total = em.createQuery("select count(b) from Board b" +
-                        " where b.member.name like :keyword", Long.class)
+                        " join b.member m" +
+                        " where m.name like :keyword", Long.class)
                 .setParameter("keyword", "%" + keyword + "%")
                 .getSingleResult();
 

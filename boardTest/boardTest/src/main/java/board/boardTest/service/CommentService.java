@@ -78,6 +78,7 @@ public class CommentService {
         Integer presentDepth = commentRepository.getDepth(boardId, index);
 
         Optional<Comment> parentComment = commentRepository.findParent(boardId, index, presentDepth - 1);
+
         if (parentComment.isPresent()) {
             Comment comment = parentComment.get();
             comment.addCommentToComment();
