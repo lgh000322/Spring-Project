@@ -34,6 +34,9 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AttachedFile> fileList = new ArrayList<>();
+
     //=============================== 연관관계 편의 메소드 ===========================/
 
     protected Board() {

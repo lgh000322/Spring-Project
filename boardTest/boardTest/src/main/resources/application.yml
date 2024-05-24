@@ -15,6 +15,9 @@ spring:
   application:
     name: boardTest
 
+file:
+  dir: C:/Users/pc/Desktop/Spring-Project/boardTest/file/
+
 #logging:
  # level:
  #   org.hibernate.SQL: trace
