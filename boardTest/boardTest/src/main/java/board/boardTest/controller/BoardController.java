@@ -1,6 +1,7 @@
 package board.boardTest.controller;
 
 import board.boardTest.domain.Member;
+import board.boardTest.domain.attachedfiledto.ViewFileDto;
 import board.boardTest.domain.boarddtos.BoardDto;
 import board.boardTest.domain.boarddtos.WriteBoardDto;
 import board.boardTest.domain.commentdtos.CommentDto;
@@ -11,16 +12,25 @@ import board.boardTest.service.AttachedFileService;
 import board.boardTest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -33,8 +43,6 @@ public class BoardController {
     private final MemberService memberService;
     private final CommentService commentService;
     private final AttachedFileService fileService;
-
-
 
     @GetMapping
     public String boardView(@PageableDefault(page = 0, size = 3) Pageable pageable,
@@ -63,6 +71,7 @@ public class BoardController {
                            Model model) {
         WriteBoardDto writeBoardDto = boardService.findById(boardId);
         List<CommentDto> findCommentDtos = commentService.getComments(writeBoardDto);
+        ViewFileDto viewFileDto = fileService.getFilesByBoardId(boardId);
         writeBoardDto.setBoardId(boardId);
 
         String memberId = memberService.getSecurityId();
@@ -71,12 +80,32 @@ public class BoardController {
         //조회수 증가
         boardService.updateView(writeBoardDto.getBoardId());
 
-        //대댓글을 가지고 있는지 확인
-
+        //모델 추가
+        model.addAttribute("ViewFileDto", viewFileDto);
         model.addAttribute("CommentDto", findCommentDtos);
         model.addAttribute("WriteBoardDto", writeBoardDto);
         model.addAttribute("LoginMemberName", findMemberDto.getName());
         return "boardView";
+    }
+
+    @ResponseBody
+    @GetMapping("/images/{fileName}")
+    public Resource downloadImage(@PathVariable(name = "fileName") String savedName) throws MalformedURLException {
+        log.info("savedName={} ", savedName);
+        return new UrlResource("file:" + fileService.getFullPath(savedName));
+    }
+
+    @GetMapping("/attach/{savedName}")
+    public ResponseEntity<Resource> downloadAttach(@PathVariable(name = "savedName") String savedName) throws MalformedURLException {
+        String findOriginalName = fileService.findOriginalNameBySavedName(savedName);
+        UrlResource resource = new UrlResource("file:" + fileService.getFullPath(savedName));
+
+        log.info("업로드 파일 이름={})", findOriginalName);
+        String encodedUploadFileName = UriUtils.encode(findOriginalName, StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\";";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(resource);
     }
 
     @GetMapping("/write")

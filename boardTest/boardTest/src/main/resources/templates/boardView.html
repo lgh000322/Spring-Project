@@ -120,6 +120,8 @@
     <p>작성자: <span th:field="*{member.name}" th:text="${WriteBoardDto.member.name}"></span></p>
     <hr>
     <p th:utext="${#strings.replace(WriteBoardDto.content, '\n', '<br/>')}"></p>
+    첨부파일: <a th:each="textFile:${ViewFileDto.textFileNames}" th:href="|/board/attach/${textFile.savedName}|" th:text="${textFile.originalName}" /><br><br>
+    <img th:each="imageFile : ${ViewFileDto.imageFileNames}" th:src="|/board/images/${imageFile.savedName}|" width="300" height="300"/><br>
 </div>
 <hr>
 
