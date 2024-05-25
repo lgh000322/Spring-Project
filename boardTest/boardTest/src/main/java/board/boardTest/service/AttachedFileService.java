@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,6 +40,30 @@ public class AttachedFileService {
         return returnList;
     }
 
+    public List<AttachedFileDto> findAllByBoardId(Long boardId) {
+        Optional<List<AttachedFile>> findBoards = attachedFileRepository.findByBoardId(boardId);
+
+        if (findBoards.isEmpty()) {
+            return null;
+        }
+
+        return findBoards.get().stream()
+                .map(AttachedFile::fileToFileDto)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteAttachedFilesFromDisk(Long boardId) {
+        List<AttachedFileDto> findAttachedFiles = findAllByBoardId(boardId);
+        for (AttachedFileDto findAttachedFile : findAttachedFiles) {
+            String storedName = findAttachedFile.getStoredName();
+            String fullPath = getFullPath(storedName);
+
+            File file = new File(fullPath);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
     public String findOriginalNameBySavedName(String savedName) {
         Optional<String> findOriginalName = attachedFileRepository.findOriginalNameBySavedName(savedName);
 

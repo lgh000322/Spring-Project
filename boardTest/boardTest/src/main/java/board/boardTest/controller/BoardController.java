@@ -1,6 +1,7 @@
 package board.boardTest.controller;
 
 import board.boardTest.domain.Member;
+import board.boardTest.domain.attachedfiledto.AttachedFileDto;
 import board.boardTest.domain.attachedfiledto.ViewFileDto;
 import board.boardTest.domain.boarddtos.BoardDto;
 import board.boardTest.domain.boarddtos.WriteBoardDto;
@@ -103,6 +104,7 @@ public class BoardController {
         log.info("업로드 파일 이름={})", findOriginalName);
         String encodedUploadFileName = UriUtils.encode(findOriginalName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\";";
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
@@ -133,6 +135,7 @@ public class BoardController {
 
     @PostMapping("/delete/{boardId}")
     public String deleteBoardById(@PathVariable(name = "boardId") Long boardId) {
+        fileService.deleteAttachedFilesFromDisk(boardId);
         boardService.deleteById(boardId);
         return "redirect:/board";
     }
