@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Exam {
+public class Example {
     private Response response;
 
     @Getter

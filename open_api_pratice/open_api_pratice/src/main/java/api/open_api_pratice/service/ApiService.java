@@ -1,6 +1,6 @@
 package api.open_api_pratice.service;
 
-import api.open_api_pratice.apiget.Exam;
+import api.open_api_pratice.apiget.Example;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,23 +21,20 @@ public class ApiService {
     @Value("${api.path}")
     private String path;
 
-    public Exam getApi() {
-        Exam block = webClient.get()
+    public Mono<Example> getApi() {
+        return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(path)
                         .queryParam("serviceKey", apiKey)
                         .queryParam("pageNo", "1")
                         .queryParam("numOfRows", "1000")
                         .queryParam("dataType", "Json")
-                        .queryParam("base_date", "20240430")
+                        .queryParam("base_date", "20240530")
                         .queryParam("base_time", "0600")
                         .queryParam("nx", "55")
                         .queryParam("ny", "127")
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(Exam.class)
-                .block();
-
-        return block;
+                .bodyToMono(Example.class);
     }
 }

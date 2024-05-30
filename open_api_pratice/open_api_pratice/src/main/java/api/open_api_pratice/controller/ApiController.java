@@ -1,6 +1,6 @@
 package api.open_api_pratice.controller;
 
-import api.open_api_pratice.apiget.Exam;
+import api.open_api_pratice.apiget.Example;
 import api.open_api_pratice.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,9 @@ public class ApiController {
     private final ApiService apiService;
 
     @GetMapping("/api")
-    public ResponseEntity<Exam> getApi() throws IOException {
-        Exam api = apiService.getApi();
+    public ResponseEntity<Mono<Example>> getApi() throws IOException {
+        Mono<Example> api = apiService.getApi();
+
         return new ResponseEntity<>(api, HttpStatus.OK);
     }
 }
