@@ -4,6 +4,8 @@ import api.open_api_pratice.apiget.Exam;
 import api.open_api_pratice.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -18,8 +20,8 @@ public class ApiController {
     private final ApiService apiService;
 
     @GetMapping("/api")
-    public Exam getApi() throws IOException {
+    public ResponseEntity<Exam> getApi() throws IOException {
         Exam api = apiService.getApi();
-        return api;
+        return new ResponseEntity<>(api, HttpStatus.OK);
     }
 }
