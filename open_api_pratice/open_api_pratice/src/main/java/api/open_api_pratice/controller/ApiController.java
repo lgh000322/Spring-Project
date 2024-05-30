@@ -22,7 +22,6 @@ public class ApiController {
     @GetMapping("/api")
     public ResponseEntity<Mono<Example>> getApi() throws IOException {
         Mono<Example> api = apiService.getApi();
-
         return new ResponseEntity<>(api, HttpStatus.OK);
     }
 }
