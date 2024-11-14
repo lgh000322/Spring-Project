@@ -96,6 +96,7 @@ public class BoardController {
         return new UrlResource("file:" + fileService.getFullPath(savedName));
     }
 
+    @ResponseBody
     @GetMapping("/attach/{savedName}")
     public ResponseEntity<Resource> downloadAttach(@PathVariable(name = "savedName") String savedName) throws MalformedURLException {
         String findOriginalName = fileService.findOriginalNameBySavedName(savedName);
